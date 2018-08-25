@@ -1,0 +1,1 @@
+function hello(o){console.log("Hi, pretty source code"+o)}

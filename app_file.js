@@ -2,15 +2,37 @@ var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
 var fs = require('fs');
+var multer = require('multer');
+
+var _storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'uploads')
+    },
+    filename: function (req, file, cb) {
+      cb(null, file.originalname)
+    }
+  })
+var upload = multer({ storage: _storage });
 
 app.set('views', './views_file');
 app.set('view engine', 'pug');
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use('/user', express.static('uploads'));
 
 app.listen(3000, function(){
     console.log('Connected, 3000 port');
 })
-// 우선 순위 존재함!!!
+
+app.get('/upload', function(req,res){
+     res.render('uploadForm')
+})
+
+app.post('/uploadForm', upload.single('userFile'), function(req,res){
+    console.log(req.file);
+    res.send('Uploaded!!!' + req.originalname);
+})
+
+// 우선 순위 존재함!!! 
 app.get('/topic/new', function(req,res){
     fs.readdir('data', function(err, files){
         if(err){
